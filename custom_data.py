@@ -9,13 +9,15 @@ import cv2
 from PIL import Image
 import ast
 import pickle
+from nltk.tokenize import word_tokenize, sent_tokenize
+from itertools import chain
 
 
 
 class ImageCaptionDataset(Dataset):
     """Image Caption dataset."""
 
-    def __init__(self, csv_file, root_dir, transform=None):
+    def __init__(self, csv_file, root_dir, mapper_file, transform=None):
         """
         Args:
             csv_file (string): Path to the csv file with annotations.
@@ -26,6 +28,9 @@ class ImageCaptionDataset(Dataset):
         self.captions = pd.read_csv(csv_file)
         self.root_dir = root_dir
         self.transform = transform
+        
+        with open('mapping.pkl', 'rb') as f:
+            self.mapper_file = pickle.load(f)
 
     def __len__(self):
         return len(self.captions)
@@ -41,10 +46,21 @@ class ImageCaptionDataset(Dataset):
         # with cv2, I need to read the convert from BGR2RGB
         image = mpimg.imread(image_name)
         
-        # read captions
-        captions = self.captions.iloc[idx, 1]
+        # read captions & transform caption to tensor
+        caption = self.captions.iloc[idx, 1]
+        caption = caption.lower()
+        tokens = word_tokenize(caption)
+                
+        caption = []
+        caption.append('<start>')
+        caption.extend([token for token in tokens])
+        caption.append('<end>')
+        caption = [self.mapper_file[i] for i in caption]
         
-        sample = {'image': image, 'captions': captions}
+        caption = torch.Tensor(caption).long()
+        
+        sample = {'image': image, 'caption': caption}
+        
         
         if self.transform:
             sample = self.transform(sample)

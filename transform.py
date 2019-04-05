@@ -11,12 +11,12 @@ import cv2
 class Normalize(object):
 
     def __call__(self, sample):
-        image, captions = sample['image'], sample['captions']
+        image, caption = sample['image'], sample['caption']
         
         image_copy = np.copy(image)
         image_copy =  image_copy/255.0
         
-        return {'image': image_copy, 'captions': captions}
+        return {'image': image_copy, 'caption': caption}
 
 
 
@@ -27,11 +27,11 @@ class Rescale(object):
         self.output_size = output_size
 
     def __call__(self, sample):
-        image, captions = sample['image'], sample['captions']
+        image, caption = sample['image'], sample['caption']
         
         img = cv2.resize(image, (self.output_size, self.output_size))
           
-        return {'image': img, 'captions': captions}
+        return {'image': img, 'caption': caption}
 
 
 
@@ -40,7 +40,7 @@ class ToTensor(object):
     """Convert ndarrays in sample to Tensors."""
 
     def __call__(self, sample):
-        image, captions = sample['image'], sample['captions']
+        image, caption = sample['image'], sample['caption']
          
         # if image has no RGB color channel, add one
         if(len(image.shape) == 2):
@@ -52,5 +52,5 @@ class ToTensor(object):
         # torch image: C X H X W
         image = image.transpose((2, 0, 1))
         
-        return {'image': torch.from_numpy(image), 'captions': captions}
-                #'captions': torch.from_numpy(captions)}
+        return {'image': torch.from_numpy(image), 'caption': caption}
+                #'caption': torch.from_numpy(caption)}
