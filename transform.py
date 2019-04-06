@@ -52,5 +52,7 @@ class ToTensor(object):
         # torch image: C X H X W
         image = image.transpose((2, 0, 1))
         
+        caption = torch.Tensor(caption).long()
+        
         return {'image': torch.from_numpy(image), 'caption': caption}
                 #'caption': torch.from_numpy(caption)}

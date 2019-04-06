@@ -57,8 +57,7 @@ class DecoderRNN(nn.Module):
         Here we need to define h0, c0 with all zeroes in order to initialize our LSTM
         Architecture
         """
-        return (torch.zeros((1, batch_size, self.hidden_dim)),
-                torch.zeros((1, batch_size, self.hidden_dim))
+        return torch.zeros((1, batch_size, self.hidden_dim)), torch.zeros((1, batch_size, self.hidden_dim))
     
     
     def forward(self, features, captions):
