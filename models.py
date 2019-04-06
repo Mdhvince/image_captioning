@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torchvision.models as models
+import numpy as np
 
 class EncoderCNN(nn.Module):
     def __init__(self, embed_size):
@@ -62,9 +63,8 @@ class DecoderRNN(nn.Module):
     
     def forward(self, features, captions):
         
-        # We don't want to take the <end> caption to make predictions of the following
-        # word.
-        captions = captions[:, :-1]
+        # We don't want to take the <end> and <PAD> captions to make prediction
+        #captions = captions[:, :-1]
         
         # Make sure that features shape are :batch_size, embed_size
         batch_size = features.shape[0]
@@ -73,7 +73,7 @@ class DecoderRNN(nn.Module):
         self.hidden = self.init_hidden(batch_size)
         
         # Create embedded word vectors for each word in the captions
-        embeddings = self.word_embeddings(captions) # embeddings new shape : (batch_size, captions length - 1, embed_size)
+        embeddings = self.word_embeddings(captions)
         
         # Stack the features and captions
         embeddings = torch.cat((features.unsqueeze(1), embeddings), dim=1) 
