@@ -63,9 +63,6 @@ class DecoderRNN(nn.Module):
     
     def forward(self, features, captions):
         
-        # We don't want to take the <end> and <PAD> captions to make prediction
-        #captions = captions[:, :-1]
-        
         # Make sure that features shape are :batch_size, embed_size
         batch_size = features.shape[0]
         
@@ -81,5 +78,7 @@ class DecoderRNN(nn.Module):
         lstm_out, self.hidden = self.lstm(embeddings, self.hidden) 
         
         out = self.linear(lstm_out)
+        
+        out = out[:, :-1]
         
         return out
