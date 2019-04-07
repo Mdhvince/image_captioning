@@ -9,6 +9,7 @@ class EncoderCNN(nn.Module):
         
         #import pre trained model
         resnet = models.resnet50(pretrained=True)
+        
         for param in resnet.parameters():
             param.requires_grad_(False)
         
@@ -79,6 +80,6 @@ class DecoderRNN(nn.Module):
         
         out = self.linear(lstm_out)
         
-        out = out[:, :-1]
+        #out = out[:, :-1]
         
         return out
