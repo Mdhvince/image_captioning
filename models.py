@@ -80,6 +80,6 @@ class DecoderRNN(nn.Module):
         
         out = self.linear(lstm_out)
         
-        #out = out[:, :-1]
+        out = out[:, :-1]
         
         return out

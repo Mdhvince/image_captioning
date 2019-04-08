@@ -1,2 +1,3 @@
 flickr30k_images/
+saved_models/
 *.pt
