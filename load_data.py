@@ -24,7 +24,7 @@ def create_dataset(csv_file, root_dir, mapper_file):
 									root_dir=root_dir,
                                 	mapper_file=mapper_file,
                                 	transform=transform)
-	return train_set
+	return train_set, vocab
 
 
 def train_valid_split(training_set, validation_size):
@@ -56,4 +56,4 @@ def build_lodaers(train_set, train_sampler, valid_sampler, batch_size, valid_siz
 	                                           batch_size=batch_size,
 	                                           sampler=valid_sampler,
 	                                           num_workers=num_workers)
-return train_loader, valid_loader
+	return train_loader, valid_loader
