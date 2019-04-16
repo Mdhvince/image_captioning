@@ -9,6 +9,7 @@ Dataset used for this project: <a href="https://www.kaggle.com/hsankesara/flickr
 
 ## File Description
 - custom_data.py: Create the dataset using the Dataset class from Pytorch
+- load_data.py: functions to split and load the data
 - mapping.pkl: vocabulary mapping integer
 - models.py: Create the architecture of the CNN and LSTM
 - training.py: Train CNN and RNN on GPU
