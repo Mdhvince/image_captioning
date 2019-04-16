@@ -2,3 +2,4 @@ flickr30k_images/
 saved_models/
 *.pt
 .ipynb_checkpoints/
+__pycache__/
