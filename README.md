@@ -13,7 +13,7 @@ Dataset used for this project: <a href="https://www.kaggle.com/hsankesara/flickr
 - mapping.pkl: vocabulary mapping integer
 - models.py: Create the architecture of the CNN and LSTM
 - training.py: Train CNN and RNN on GPU
-- premilinaries.ipynb: Notebook to ensure that all parts of the architecture (CNN and LSTM) work as expected
+- Notebook_PDF/premilinaries.pdf:PDF version of the  Notebook: to ensure that all parts of the architecture (CNN and LSTM) work as expected
 - transform.py: Python file that contains all classes to transform the data (images and captions)
 - vocab.pkl: (Non unique) words in the dataset
 
