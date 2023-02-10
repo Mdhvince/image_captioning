@@ -3,4 +3,5 @@ saved_models/
 *.pt
 .ipynb_checkpoints/
 __pycache__/
-Notebook/
+notebook/
+.idea/
