@@ -1,5 +1,5 @@
 flickr30k_images/
-saved_models/
+weights/
 *.pt
 .ipynb_checkpoints/
 __pycache__/
