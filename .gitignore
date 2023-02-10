@@ -3,6 +3,5 @@ weights/
 *.pt
 .ipynb_checkpoints/
 __pycache__/
-notebook/
 .idea/
 venv/
