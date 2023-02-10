@@ -5,3 +5,4 @@ weights/
 __pycache__/
 notebook/
 .idea/
+venv/
