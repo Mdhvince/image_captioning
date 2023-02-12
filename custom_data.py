@@ -8,7 +8,7 @@ import pandas as pd
 import matplotlib.image as mpimg
 import torchvision.transforms as T
 from nltk.tokenize import word_tokenize
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 
 
 class CustomDataset(Dataset):

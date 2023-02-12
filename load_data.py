@@ -1,12 +1,6 @@
-import os
-import numpy as np
-import torch
-import torchvision
 import torchvision.transforms as transforms
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
-from torchvision import datasets, models
-import pickle
 
 from custom_data import *
 
