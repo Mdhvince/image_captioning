@@ -1,6 +1,7 @@
 flickr30k_images/
 weights/
 *.pt
+*.pkl
 .ipynb_checkpoints/
 __pycache__/
 .idea/

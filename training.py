@@ -67,18 +67,18 @@ def train(n_epochs, train_loader, valid_loader, save_location_path, embed_size, 
 
             valid_loss += loss.item() * images.size(0)
 
-            # Average losses
-            train_loss = train_loss / len(train_loader)
-            valid_loss = valid_loss / len(valid_loader)
+        # Average losses
+        train_loss = train_loss / len(train_loader)
+        valid_loss = valid_loss / len(valid_loader)
 
-            print(f"Epoch: {epoch} \tTraining Loss: {train_loss} \tValidation Loss: {valid_loss}")
+        print(f"Epoch: {epoch} \tTraining Loss: {train_loss} \tValidation Loss: {valid_loss}")
 
-            # save model if validation loss has decreased
-            if valid_loss <= valid_loss_min:
-                print(f"Validation loss decreased ({valid_loss_min} --> {valid_loss}).  Saving model ...")
-                torch.save(encoder.state_dict(), save_location_path + '/encoder{n_epochs}.pt')
-                torch.save(decoder.state_dict(), save_location_path + '/decoder{n_epochs}.pt')
-                valid_loss_min = valid_loss
+        # save model if validation loss has decreased
+        if valid_loss <= valid_loss_min:
+            print(f"Validation loss decreased ({valid_loss_min} --> {valid_loss}).  Saving model ...")
+            torch.save(encoder.state_dict(), save_location_path + '/encoder{n_epochs}.pt')
+            torch.save(decoder.state_dict(), save_location_path + '/decoder{n_epochs}.pt')
+            valid_loss_min = valid_loss
 
 
 if __name__ == '__main__':
