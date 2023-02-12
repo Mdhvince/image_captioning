@@ -49,8 +49,9 @@ if __name__ == "__main__":
     img_tensor = img_tensor.unsqueeze(0)
 
     # forward
-    features = encoder(img_tensor).unsqueeze(1)
-    output = decoder.sample(features, word2idx)
+    with torch.no_grad():
+        features = encoder(img_tensor).unsqueeze(1)
+        output = decoder.sample(features, word2idx)
 
     # display
     idx2word = {v: k for k, v in word2idx.items()}
