@@ -115,10 +115,11 @@ class ToTensor(object):
 
 
 if __name__ == "__main__":
-    dataset = Path("/home/medhyvinceslas/Documents/programming/datasets/image_captioning_flickr30k_images")
+    root = Path("/home/medhyvinceslas/Documents/programming")
+    dataset = root / "datasets/image_captioning_flickr30k_images"
     annotations = dataset / "annotations_cleaned.csv"
     image_folder = dataset / "flickr30k_images"
-    word2idx_file = Path("/home/medhyvinceslas/Documents/programming/Image_Captioning/word2idx.pkl")
+    word2idx_file = root / "Image_Captioning/word2idx-toy.pkl"
 
     transform = T.Compose([
         Rescale(224),
