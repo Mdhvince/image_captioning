@@ -94,7 +94,7 @@ if __name__ == '__main__':
 
     train_set, vocab = create_dataset(csv_file, root_dir, mapper_file)
     train_sampler, valid_sampler = train_valid_split(train_set, valid_size)
-    train_loader, valid_loader = build_lodaers(train_set, train_sampler, valid_sampler,
+    train_loader, valid_loader = build_loaders(train_set, train_sampler, valid_sampler,
                                                batch_size, valid_size, num_workers,
                                                csv_file, root_dir)
 
