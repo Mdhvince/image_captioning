@@ -3,64 +3,73 @@ from networks import EncoderCNN, DecoderRNN
 from load_data import *
 
 
-def train(
+def train(encoder, decoder, train_loader, vocab_size, criterion, optimizer, device):
+    running_loss = 0.0
+
+    encoder.train()
+    decoder.train()
+    for data in train_loader:
+        images, captions = data["image"], data["caption"]
+
+        if torch.cuda.is_available():
+            images = images.type(torch.cuda.FloatTensor)
+        else:
+            images = images.type(torch.FloatTensor)
+
+        images.to(device)
+        captions.to(device)
+
+        decoder.zero_grad()
+        encoder.zero_grad()
+
+        features = encoder(images)
+        outputs = decoder(features, captions)
+
+        loss = criterion(outputs.contiguous().view(-1, vocab_size).to(device), captions.view(-1).to(device))
+        loss.backward()
+        optimizer.step()
+
+        running_loss += loss.item() * images.size(0)
+
+    return running_loss
+
+def validate(encoder, decoder, valid_loader, vocab_size, criterion, device):
+    running_valid_loss = 0.0
+
+    encoder.eval()
+    decoder.eval()
+    for data in valid_loader:
+        images, captions = data["image"], data["caption"]
+
+        if torch.cuda.is_available():
+            images = images.type(torch.cuda.FloatTensor)
+        else:
+            images = images.type(torch.FloatTensor)
+
+        images.to(device)
+        captions.to(device)
+
+        features = encoder(images)
+        outputs = decoder(features, captions)
+
+        loss = criterion(outputs.contiguous().view(-1, vocab_size).to(device), captions.view(-1).to(device))
+
+        running_valid_loss += loss.item() * images.size(0)
+
+    return running_valid_loss
+
+def learn(
         encoder, decoder,
         criterion, optimizer, train_loader, valid_loader, encoder_path, decoder_path, vocab_size, device, n_epochs):
     valid_loss_min = np.Inf
 
     for epoch in range(1, n_epochs + 1):
-
-        train_loss = 0.0
-        valid_loss = 0.0
-
-        encoder.train()
-        decoder.train()
-        for data in train_loader:
-            images, captions = data["image"], data["caption"]
-
-            if torch.cuda.is_available():
-                images = images.type(torch.cuda.FloatTensor)
-            else:
-                images = images.type(torch.FloatTensor)
-
-            images.to(device)
-            captions.to(device)
-
-            decoder.zero_grad()
-            encoder.zero_grad()
-
-            features = encoder(images)
-            outputs = decoder(features, captions)
-
-            loss = criterion(outputs.contiguous().view(-1, vocab_size).to(device), captions.view(-1).to(device))
-            loss.backward()
-            optimizer.step()
-
-            train_loss += loss.item() * images.size(0)
-
-        encoder.eval()
-        decoder.eval()
-        for data in valid_loader:
-            images, captions = data["image"], data["caption"]
-
-            if torch.cuda.is_available():
-                images = images.type(torch.cuda.FloatTensor)
-            else:
-                images = images.type(torch.FloatTensor)
-
-            images.to(device)
-            captions.to(device)
-
-            features = encoder(images)
-            outputs = decoder(features, captions)
-
-            loss = criterion(outputs.contiguous().view(-1, vocab_size).to(device), captions.view(-1).to(device))
-
-            valid_loss += loss.item() * images.size(0)
+        running_train_loss = train(encoder, decoder, train_loader, vocab_size, criterion, optimizer, device)
+        running_valid_loss = validate(encoder, decoder, valid_loader, vocab_size, criterion, device)
 
         # Average losses
-        train_loss = train_loss / len(train_loader)
-        valid_loss = valid_loss / len(valid_loader)
+        train_loss = running_train_loss / len(train_loader)
+        valid_loss = running_valid_loss / len(valid_loader)
 
         print(f"Epoch: {epoch} \tTraining Loss: {train_loss} \tValidation Loss: {valid_loss}")
 
@@ -106,6 +115,6 @@ if __name__ == '__main__':
     params = list(decoder.parameters()) + list(encoder.embed.parameters())
     optimizer = torch.optim.Adam(params, lr=0.001)
 
-    train(
+    learn(
         encoder, decoder,
         criterion, optimizer, train_loader, valid_loader, encoder_path, decoder_path, vocab_size, device, n_epochs)
