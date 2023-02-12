@@ -2,6 +2,9 @@
 
 Dataset: <a href="https://www.kaggle.com/hsankesara/flickr-image-dataset">Flickr</a>
 
+### Example output
+![image info](docs/out.png)
+
 ### Authors
 Medhy Vinceslas
 
