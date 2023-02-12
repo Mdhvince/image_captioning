@@ -76,7 +76,7 @@ def learn(encoder, decoder, criterion, optimizer, loaders, encoder_path, decoder
 
         print(f"Epoch: {epoch} \tTraining Loss: {train_loss} \tValidation Loss: {valid_loss}")
 
-        # save model if validation loss has decreased
+        # save model (if validation loss has decreased)
         if valid_loss <= valid_loss_min:
             print(f"Validation loss decreased ({valid_loss_min} --> {valid_loss}).  Saving model ...")
             torch.save(encoder.state_dict(), encoder_path)
