@@ -8,7 +8,14 @@ from load_data import create_dataset
 
 
 class EncoderCNN(nn.Module):
+    """
+    Use a pre-trained CNN to extract the features.
+    """
     def __init__(self, embed_size, device):
+        """
+        embed_size: hyperparameter representing the size of the output feature. This will also be the input size of
+        the embedding layer of Decoder.
+        """
         super(EncoderCNN, self).__init__()
 
         resnet = models.resnet50(pretrained=True)
