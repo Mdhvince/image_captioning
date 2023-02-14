@@ -137,7 +137,7 @@ if __name__ == "__main__":
     dataset = root / "datasets/image_captioning_flickr30k_images"
     annotations = dataset / "annotations_cleaned.csv"
     image_folder = dataset / "flickr30k_images"
-    word2idx_file = root / "Image_Captioning/word2idx-toy.pkl"
+    word2idx_file = root / "Image_Captioning/word2idx.pkl"
 
     max_seq_length = 20
 
