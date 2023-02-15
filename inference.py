@@ -79,12 +79,11 @@ if __name__ == "__main__":
     word2idx_file = root / "Image_Captioning/word2idx.pkl"
     encoder_path = root / "Image_Captioning/weights/encoder.pt"
     decoder_path = root / "Image_Captioning/weights/decoder.pt"
+    im_path = root / "datasets/dog_cat_classification/test/data/4.jpg"
 
     n_gpu, device = cuda_setup()
     word2idx, vocab_size = get_vocabulary(word2idx_file)
     encoder, decoder = load_models(cfg_net, vocab_size, encoder_path, decoder_path, device)
-
-    im_path = root / "datasets/dog_cat_classification/test/data/4.jpg"
     image, img_tensor = load_transform_image(im_path, device)
 
     # forward
