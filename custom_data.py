@@ -12,7 +12,9 @@ from torch.utils.data import Dataset
 
 
 class CustomDataset(Dataset):
-    """Image Caption dataset."""
+    """
+    Image Caption dataset
+    """
 
     def __init__(self, csv_file, image_folder, word2idx_file, max_seq_length=20, transform=None):
         self.max_seq_length = max_seq_length
@@ -41,7 +43,7 @@ class CustomDataset(Dataset):
         caption_lw = caption.lower()
         tokens = word_tokenize(caption_lw)
 
-        # add the made-up start and end tokens and transform all token to integer
+        # add the start and end tokens and transform all token to integer
         caption_enriched = ['<start>']
         caption_enriched.extend([token for token in tokens])
         caption_enriched.append('<end>')
@@ -57,13 +59,16 @@ class CustomDataset(Dataset):
 
         return sample
 
-    def pad_data(self, s):
-        padded = np.ones((self.max_seq_length,), dtype=np.int64) * self.word2idx['<PAD>']
+    def pad_data(self, sentence_int):
+        """
+        sentence_int: encoded sentence into integer
+        """
+        padded = np.ones((self.max_seq_length,), dtype=np.int64) * self.word2idx["<PAD>"]
 
-        if len(s) > self.max_seq_length:
+        if len(sentence_int) > self.max_seq_length:
             padded[:] = s[:self.max_seq_length]
         else:
-            padded[:len(s)] = s
+            padded[:len(sentence_int)] = sentence_int
 
         return padded
 

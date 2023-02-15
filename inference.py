@@ -1,24 +1,28 @@
+import configparser
+import warnings
+
 import matplotlib.pyplot as plt
 
 from custom_data import *
 from networks import EncoderCNN, DecoderRNN
 
-if __name__ == "__main__":
-    root = Path("/home/medhyvinceslas/Documents/programming")
-    word2idx_file = root / "Image_Captioning/word2idx.pkl"
-    encoder_path = root / "Image_Captioning/weights/encoder.pt"
-    decoder_path = root / "Image_Captioning/weights/decoder.pt"
+warnings.filterwarnings('ignore')
 
-    with open(word2idx_file, 'rb') as f:
-        word2idx = pickle.load(f)
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+def cuda_setup():
+    is_cuda = torch.cuda.is_available()
+    if is_cuda:
+        torch.cuda.empty_cache()
+
+    n_gpu = torch.cuda.device_count()
+    device = torch.device("cuda" if is_cuda else "cpu")
     print(f"Running on {device}\n")
+    return n_gpu, device
 
-    vocab_size = len(word2idx)
-    embed_size = 256
-    hidden_size = 512
-    num_layers = 2
+def load_models(cfg_net, vocab_size, encoder_path, decoder_path, device):
+    num_layers = cfg_net.getint("num_layers")
+    embed_size = cfg_net.getint("embed_size")
+    hidden_size = cfg_net.getint("hidden_size")
 
     encoder = EncoderCNN(embed_size, device)
     decoder = DecoderRNN(embed_size, hidden_size, vocab_size, num_layers=num_layers, device=device)
@@ -31,10 +35,15 @@ if __name__ == "__main__":
     encoder.eval()
     decoder.eval()
 
-    # pre-process
-    im_path = root / "datasets/image_captioning_flickr30k_images/flickr30k_images/301246.jpg"
-    im_path = root / "datasets/dog_cat_classification/test/data/4.jpg"
+    return encoder, decoder
 
+def get_vocabulary(word2idx_file):
+    with open(word2idx_file, 'rb') as f:
+        word2idx = pickle.load(f)
+    vocab_size = len(word2idx)
+    return word2idx, vocab_size
+
+def load_transform_image(im_path, device):
     image = mpimg.imread(im_path)
 
     transform = T.Compose([
@@ -47,21 +56,43 @@ if __name__ == "__main__":
     img_tensor = img_tensor.type(torch.FloatTensor)
     img_tensor = img_tensor.to(device)
     img_tensor = img_tensor.unsqueeze(0)
+    return image, img_tensor
 
-    # forward
-    with torch.no_grad():
-        features = encoder(img_tensor).unsqueeze(1)
-        output = decoder.sample(features, word2idx)
-
-    # display
+def process_caption(output, word2idx):
     idx2word = {v: k for k, v in word2idx.items()}
 
     assert all([isinstance(x, int) for x in output]), "items in output tensor should be integer"
     assert all(
         [x in idx2word for x in output]), "items in the output needs to correspond to an integer in the vocabulary."
 
-    caption_string = [idx2word[i] for i in output]
+    caption_string = [idx2word[i] for i in output if idx2word[i] not in ["<start>", "<end>"]]
     caption_string = " ".join(caption_string)
+    return caption_string
+
+
+if __name__ == "__main__":
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+    cfg_net = config["NETWORK"]
+
+    root = Path("/home/medhyvinceslas/Documents/programming")
+    word2idx_file = root / "Image_Captioning/word2idx.pkl"
+    encoder_path = root / "Image_Captioning/weights/encoder.pt"
+    decoder_path = root / "Image_Captioning/weights/decoder.pt"
+
+    n_gpu, device = cuda_setup()
+    word2idx, vocab_size = get_vocabulary(word2idx_file)
+    encoder, decoder = load_models(cfg_net, vocab_size, encoder_path, decoder_path, device)
+
+    im_path = root / "datasets/dog_cat_classification/test/data/4.jpg"
+    image, img_tensor = load_transform_image(im_path, device)
+
+    # forward
+    with torch.no_grad():
+        features = encoder(img_tensor).unsqueeze(1)
+        output = decoder.sample(features, word2idx)
+
+    caption_string = process_caption(output, word2idx)
 
     plt.title(caption_string)
     plt.axis("off")

@@ -1,4 +1,5 @@
-import torch
+import configparser
+
 import torch.nn as nn
 from networks import EncoderCNN, DecoderRNN
 from load_data import *
@@ -101,6 +102,7 @@ if __name__ == '__main__':
     hidden_size = 512
     num_layers = 2
     n_epochs = 1
+    lr = 0.001
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(device)
@@ -116,6 +118,6 @@ if __name__ == '__main__':
 
     criterion = nn.CrossEntropyLoss().to(device)
     params = list(decoder.parameters()) + list(encoder.embed.parameters())
-    optimizer = torch.optim.Adam(params, lr=0.001)
+    optimizer = torch.optim.Adam(params, lr=lr)
 
     learn(encoder, decoder, criterion, optimizer, loaders, encoder_path, decoder_path, vocab_size, device, n_epochs)
