@@ -19,10 +19,12 @@ def cuda_setup():
     print(f"Running on {device}\n")
     return n_gpu, device
 
-def load_models(cfg_net, vocab_size, encoder_path, decoder_path, device):
+def load_models(cfg, cfg_net, vocab_size, device):
     num_layers = cfg_net.getint("num_layers")
     embed_size = cfg_net.getint("embed_size")
     hidden_size = cfg_net.getint("hidden_size")
+    encoder_path = Path(cfg.get("encoder_path"))
+    decoder_path = Path(cfg.get("decoder_path"))
 
     encoder = EncoderCNN(embed_size, device)
     decoder = DecoderRNN(embed_size, hidden_size, vocab_size, num_layers=num_layers, device=device)
@@ -37,9 +39,12 @@ def load_models(cfg_net, vocab_size, encoder_path, decoder_path, device):
 
     return encoder, decoder
 
-def get_vocabulary(word2idx_file):
+def get_vocabulary(cfg):
+    word2idx_file = Path(cfg.get("word2idx_file"))
+
     with open(word2idx_file, 'rb') as f:
         word2idx = pickle.load(f)
+
     vocab_size = len(word2idx)
     return word2idx, vocab_size
 
@@ -71,19 +76,15 @@ def process_caption(output, word2idx):
 
 
 if __name__ == "__main__":
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
     config.read("config.ini")
-    cfg_net = config["NETWORK"]
+    cfg, cfg_net = config["DEFAULT"], config["NETWORK"]
 
-    root = Path("/home/medhyvinceslas/Documents/programming")
-    word2idx_file = root / "Image_Captioning/word2idx.pkl"
-    encoder_path = root / "Image_Captioning/weights/encoder.pt"
-    decoder_path = root / "Image_Captioning/weights/decoder.pt"
-    im_path = root / "datasets/dog_cat_classification/test/data/4.jpg"
+    im_path = Path(cfg.get("root")) / "datasets/dog_cat_classification/test/data/4.jpg"
 
     n_gpu, device = cuda_setup()
-    word2idx, vocab_size = get_vocabulary(word2idx_file)
-    encoder, decoder = load_models(cfg_net, vocab_size, encoder_path, decoder_path, device)
+    word2idx, vocab_size = get_vocabulary(cfg)
+    encoder, decoder = load_models(cfg, cfg_net, vocab_size, device)
     image, img_tensor = load_transform_image(im_path, device)
 
     # forward
